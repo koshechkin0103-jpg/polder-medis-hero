@@ -1,8 +1,8 @@
 /* =============================================================
    Polder Medis — первый экран
    Все размеры измерены по макету 2880×1440 (@2x) и переведены
-   в CSS-пиксели базы 1440×720. Единица u = 1/1440 ширины блока,
-   поэтому пропорции сохраняются при любой ширине окна.
+   в CSS-пиксели базы 1440×720. Единица u = min(ширина/1440, высота/720)
+   окна, поэтому пропорции сохраняются при любом размере окна.
    ============================================================= */
 
 :root {
@@ -34,43 +34,57 @@ ul { list-style: none; }
 
 /* ---------- Сцена ---------- */
 
+/* Первый экран занимает ровно окно браузера. Макет 1440×720 вписывается в него
+   по меньшей стороне (u = min(ширина/1440, высота/720)):
+   • окно шире 2:1 (16:9 с узкой высотой) — сцена ограничена высотой и
+     центрируется по горизонтали;
+   • окно выше 2:1 (16:10 MacBook, панели браузера) — сцена на всю ширину,
+     шапка прижата к верху, нижний блок — к низу, голова центрируется
+     в оставшемся пространстве, градиент привязан к нижней кромке. */
 .hero {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 1;               /* 1440 × 720 */
-  container-type: inline-size;
+  height: 100vh;
+  height: 100svh;
+  min-height: calc(100vw / 2.6);      /* совсем низкие окна — лучше прокрутка, чем крошечный текст */
+  container-type: size;
   overflow: hidden;
   isolation: isolate;                /* multiply не выходит за пределы экрана */
-  /* Вертикальный градиент по замерам левой кромки макета (x=5)
-     + радиальное сгущение к нижнему центру (пипетка: центр низа 216,179,220
-     против кромки 228,202,230). */
+  /* Единица масштаба, 1u = 1px при 1440×720. Для самого .hero (фон) — от окна,
+     для детей ниже — от контейнера (cq-единицы, скроллбар не влияет). */
+  --u: min(100vw / 1440, 100vh / 720);
+  --u: min(100vw / 1440, 100svh / 720);
+  --sx: calc(50vw - 720 * var(--u));  /* левый край сцены 1440u, отцентрованной по ширине */
+  /* Вертикальный градиент по замерам левой кромки макета (x=5), стопы отсчитаны
+     от нижней кромки (y 720 = 0u) + радиальное сгущение к нижнему центру
+     (пипетка: центр низа 216,179,220 против кромки 228,202,230). */
   background:
-    radial-gradient(ellipse 55% 36% at 50% 100%, rgba(168, 88, 180, .20), rgba(168, 88, 180, 0)),
+    radial-gradient(ellipse calc(792 * var(--u)) calc(259 * var(--u)) at 50% 100%, rgba(168, 88, 180, .20), rgba(168, 88, 180, 0)),
     linear-gradient(
-      to bottom,
-      #fefefe 0%,
-      #fefefe 62.5%,        /* y 450 */
-      #fefdfe 63.9%,        /* y 460 */
-      #fcfafc 65.3%,        /* y 470 */
-      #faf7fb 66.7%,        /* y 480 */
-      #f9f4f9 68.1%,        /* y 490 */
-      #f8f1f8 69.4%,        /* y 500 */
-      #f4ebf5 72.2%,        /* y 520 */
-      #f2e6f3 75.0%,        /* y 540 */
-      #efe0f0 77.8%,        /* y 560 */
-      #ecdbee 80.6%,        /* y 580 */
-      #ead7ec 83.3%,        /* y 600 */
-      #e8d2ea 86.1%,        /* y 620 */
-      #e6cee8 88.9%,        /* y 640 */
-      #e5cde7 91.7%,        /* y 660 */
-      #e4cce7 94.4%,        /* y 680 */
-      #e4cbe6 97.2%,        /* y 700 */
-      #e4cae6 100%          /* y 720 */
+      to top,
+      #e4cae6 0,                       /* y 720 */
+      #e4cbe6 calc(20 * var(--u)),     /* y 700 */
+      #e4cce7 calc(40 * var(--u)),     /* y 680 */
+      #e5cde7 calc(60 * var(--u)),     /* y 660 */
+      #e6cee8 calc(80 * var(--u)),     /* y 640 */
+      #e8d2ea calc(100 * var(--u)),    /* y 620 */
+      #ead7ec calc(120 * var(--u)),    /* y 600 */
+      #ecdbee calc(140 * var(--u)),    /* y 580 */
+      #efe0f0 calc(160 * var(--u)),    /* y 560 */
+      #f2e6f3 calc(180 * var(--u)),    /* y 540 */
+      #f4ebf5 calc(200 * var(--u)),    /* y 520 */
+      #f8f1f8 calc(220 * var(--u)),    /* y 500 */
+      #f9f4f9 calc(230 * var(--u)),    /* y 490 */
+      #faf7fb calc(240 * var(--u)),    /* y 480 */
+      #fcfafc calc(250 * var(--u)),    /* y 470 */
+      #fefdfe calc(260 * var(--u)),    /* y 460 */
+      #fefefe calc(270 * var(--u)),    /* y 450 */
+      #fefefe 100%
     );
 }
 
-/* Единица масштаба. cqw — ширина контейнера .hero, независимо от скроллбара. */
-.hero > * { --u: calc(1cqw / 14.4); }
+/* Единицы наследуются детьми; cq-единицы считаются от .hero, скроллбар не влияет. */
+.hero > * { --u: min(1cqw / 14.4, 1cqh / 7.2); --sx: calc(50cqw - 720 * var(--u)); }
 
 /* ---------- Видео ---------- */
 
@@ -90,8 +104,8 @@ ul { list-style: none; }
 .hero__canvas,
 .hero__poster {
   position: absolute;
-  left: calc(71.5 * var(--u));
-  top: calc(-21.5 * var(--u));
+  left: calc(var(--sx) + 71.5 * var(--u));
+  top: calc(50% - 381.5 * var(--u));   /* = -21.5u при высоте 720u, иначе центр свободного места */
   width: calc(1280 * var(--u));
   height: calc(720 * var(--u));
   display: block;
@@ -122,7 +136,7 @@ ul { list-style: none; }
 
 .logo {
   position: absolute;
-  left: calc(14 * var(--u));
+  left: calc(var(--sx) + 14 * var(--u));
   top: calc(10 * var(--u));
   font-family: var(--font-logo);
   font-weight: 700;
@@ -136,7 +150,7 @@ ul { list-style: none; }
 
 .tagline {
   position: absolute;
-  left: calc(162 * var(--u));
+  left: calc(var(--sx) + 162 * var(--u));
   top: calc(9.95 * var(--u));
   font-size: calc(10.3 * var(--u));
   line-height: calc(13 * var(--u));
@@ -151,14 +165,14 @@ ul { list-style: none; }
   letter-spacing: calc(-0.8 * var(--u));
   white-space: nowrap;
 }
-.nav { left: calc(927 * var(--u)); }
+.nav { left: calc(var(--sx) + 927 * var(--u)); }
 .nav__link { position: absolute; top: 0; }
 .nav__link:nth-child(1) { left: 0; }
 .nav__link:nth-child(2) { left: calc(59 * var(--u)); }
 .nav__link:nth-child(3) { left: calc(196.5 * var(--u)); }
 .nav__link--muted { color: var(--muted-nav); }
 
-.social { left: calc(1249 * var(--u)); top: calc(15 * var(--u)); }
+.social { left: calc(var(--sx) + 1249 * var(--u)); top: calc(15 * var(--u)); }
 .social__link { position: absolute; top: 0; }
 .social__link:nth-child(1) { left: 0; }
 .social__link:nth-child(2) { left: calc(98 * var(--u)); }
@@ -168,8 +182,8 @@ ul { list-style: none; }
 .headline {
   position: absolute;
   z-index: 2;
-  left: calc(15.6 * var(--u));
-  top: calc(480.8 * var(--u));
+  left: calc(var(--sx) + 15.6 * var(--u));
+  bottom: calc(57.2 * var(--u));       /* top 480.8 + 4×45.5 = 662.8 → 720−662.8 */
   font-weight: 400;
   font-size: calc(41.1 * var(--u));
   line-height: calc(45.5 * var(--u));
@@ -180,20 +194,20 @@ ul { list-style: none; }
 .email, .location {
   position: absolute;
   z-index: 2;
-  top: calc(684 * var(--u));
+  bottom: calc(10 * var(--u));         /* top 684 + 26 */
   font-size: calc(20.9 * var(--u));
   line-height: calc(26 * var(--u));
   white-space: nowrap;
 }
-.email { left: calc(14.5 * var(--u)); }
-.location { right: calc(15.9 * var(--u)); }
+.email { left: calc(var(--sx) + 14.5 * var(--u)); }
+.location { right: calc(var(--sx) + 15.9 * var(--u)); }
 
 .cats {
   position: absolute;
   z-index: 2;
-  top: calc(652 * var(--u));
-  left: 0;
-  right: 0;
+  bottom: calc(50 * var(--u));         /* top 652 + 18 */
+  left: var(--sx);
+  width: calc(1440 * var(--u));
   height: calc(18 * var(--u));
   font-size: calc(13.5 * var(--u));
   line-height: calc(18 * var(--u));
@@ -210,8 +224,8 @@ ul { list-style: none; }
 .card {
   position: absolute;
   z-index: 2;
-  left: calc(1090 * var(--u));
-  top: calc(463.5 * var(--u));
+  left: calc(var(--sx) + 1090 * var(--u));
+  bottom: calc(98.5 * var(--u));       /* top 463.5 + 158 */
   width: calc(307 * var(--u));
   height: calc(158 * var(--u));
   border-radius: calc(10 * var(--u));

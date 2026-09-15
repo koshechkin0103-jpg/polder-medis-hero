@@ -82,7 +82,7 @@
 
   let lastPtr = null;        // последняя принятая позиция курсора
   let rect = hero.getBoundingClientRect();
-  const uPx = () => rect.width / 1440;
+  const uPx = () => Math.min(rect.width / 1440, rect.height / 720);   // как --u в CSS
 
   // ---------- Загрузка в память ----------
   async function fetchBlob(url) {
