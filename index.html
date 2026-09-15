@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polder Medis — Strategic Positioning, Visual Identity, Digital and Marketing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Antonio:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="hero" id="hero">
+    <!-- Видео головы. Лежит в той же системе координат (u), что и вёрстка. -->
+    <div class="hero__media" aria-hidden="true">
+      <img class="hero__poster" id="poster" src="assets/video/poster-1x.jpg" srcset="assets/video/poster-1x.jpg 1x, assets/video/poster-2x.jpg 2x" width="1280" height="720" alt="" decoding="async" fetchpriority="high">
+      <canvas id="faceCanvas" class="hero__canvas" width="1280" height="720"></canvas>
+      <!-- Источник кадров: не показывается напрямую, кадры рисуются в canvas -->
+      <video id="face" class="hero__video" muted playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+    </div>
+
+    <header class="hero__top">
+      <a class="logo" href="#">POLDER MEDIS</a>
+      <p class="tagline">Strategic Positioning, Visual Identity,<br>&nbsp;Digital and Marketing.</p>
+      <nav class="nav" aria-label="Main">
+        <a class="nav__link nav__link--muted" href="#">Work</a>
+        <a class="nav__link nav__link--muted" href="#">The Difference</a>
+        <a class="nav__link" href="#">Contact</a>
+      </nav>
+      <nav class="social" aria-label="Social">
+        <a class="social__link" href="#">Instagram</a>
+        <a class="social__link" href="#">Substack</a>
+      </nav>
+    </header>
+
+    <h1 class="headline">We help ambitious<br>brands &amp; teams at<br>their most defining<br>moments.</h1>
+
+    <a class="email" href="mailto:hello@newdays.work">hello@newdays.work</a>
+    <p class="location">London, E8 3PN</p>
+
+    <ul class="cats">
+      <li class="cats__item">BRAND EXPERIENCES</li>
+      <li class="cats__item">INSTALLATION DESIGN</li>
+      <li class="cats__item">STRATEGY &amp; CONSULTATION</li>
+    </ul>
+
+    <aside class="card">
+      <img class="card__photo" src="assets/card-photo@2x.png" width="170" height="298" alt="">
+      <p class="card__kicker">Launching soon</p>
+      <p class="card__sub">Groundworks</p>
+      <p class="card__title">6-week brief creation<br>for those building next<br>generation spaces</p>
+      <a class="card__btn" id="cta" href="#"><span class="card__btn-label">Find out more</span><span class="card__btn-dot"></span></a>
+    </aside>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
